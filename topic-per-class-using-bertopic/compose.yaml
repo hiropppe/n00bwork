@@ -5,6 +5,7 @@ services:
       - .:/workspace
     command: sleep infinity
 
+  ## use local (docker.host.internal) ollama 
   #ollama:
   #  image: ollama/ollama:latest
   #  volumes:
