@@ -15,4 +15,5 @@ dependencies = [
     "spacy>=3.8.11",
     "statsmodels>=0.14.6",
     "openai>=2.30.0",
+    "tiktoken>=0.12.0",
 ]
