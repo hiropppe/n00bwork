@@ -1,0 +1,35 @@
+services:
+  python:
+    build:
+      context: .
+      dockerfile: docker/python/Dockerfile
+    image: jdsf-python:dev
+    container_name: jdsf-python
+    working_dir: /workspace
+    volumes:
+      - .:/workspace:cached
+      - ./data:/data
+      - uv-cache:/root/.cache/uv
+    environment:
+      - PYTHONUNBUFFERED=1
+      - UV_LINK_MODE=copy
+      - UV_PROJECT_ENVIRONMENT=/workspace/.venv
+    command: ["sleep", "infinity"]
+    tty: true
+    stdin_open: true
+
+  duckdb:
+    build:
+      context: .
+      dockerfile: docker/duckdb/Dockerfile
+    image: jdsf-duckdb:dev
+    container_name: jdsf-duckdb
+    volumes:
+      - ./data:/data
+    working_dir: /data
+    command: ["sleep", "infinity"]
+    tty: true
+    stdin_open: true
+
+volumes:
+  uv-cache:
