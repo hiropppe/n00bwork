@@ -1,0 +1,17 @@
+[project]
+name = "confluence-to-notion"
+version = "0.1.0"
+requires-python = ">=3.13"
+dependencies = [
+    "jupyterlab>=4.4",
+    "atlassian-python-api>=3.41",
+    "requests>=2.32",
+    "beautifulsoup4>=4.12",
+    "lxml>=5.3",
+    "httpx>=0.28",
+    "python-dotenv>=1.0",
+    "pandas>=2.2",
+]
+
+[dependency-groups]
+dev = []
