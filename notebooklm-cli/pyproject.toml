@@ -1,0 +1,21 @@
+[project]
+name = "notebooklm-cli"
+version = "0.1.0"
+description = "Test NotebookLM CLI or API"
+requires-python = ">=3.13"
+dependencies = [
+    "notebooklm-py[browser]>=0.4.0",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.7",
+    "pytest>=8.3",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

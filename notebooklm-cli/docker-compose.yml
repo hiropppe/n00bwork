@@ -1,0 +1,22 @@
+services:
+  python:
+    build:
+      context: .
+      dockerfile: docker/python/Dockerfile
+    image: notebooklm-cli:dev
+    container_name: notebooklm-cli
+    working_dir: /workspace
+    volumes:
+      - .:/workspace:cached
+      - uv-cache:/root/.cache/uv
+      - ${HOME}/.notebooklm:/root/.notebooklm
+    environment:
+      - PYTHONUNBUFFERED=1
+      - UV_LINK_MODE=copy
+      - UV_PROJECT_ENVIRONMENT=/opt/venv
+    command: ["sleep", "infinity"]
+    tty: true
+    stdin_open: true
+
+volumes:
+  uv-cache:
