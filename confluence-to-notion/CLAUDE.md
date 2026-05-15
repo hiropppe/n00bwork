@@ -71,6 +71,7 @@ CONFLUENCE_DC_PAT=your-personal-access-token
 |---------|------|
 | `confluence_dc_api_sample.ipynb` | DC API の基本動作確認（スペース・ページ・CQL・添付ファイル取得） |
 | `confluence_macro_survey.ipynb` | 全スペース・全ページのマクロ使用状況を集計・可視化 |
+| `notion_api_sample.ipynb` | Notion API の基本動作確認（ページ・DB・ブロック取得、ページ作成） |
 
 ## Confluence ストレージ形式とマクロのパース
 
@@ -93,3 +94,31 @@ for macro in soup.find_all("ac:structured-macro"):
 ```python
 import japanize_matplotlib  # import するだけで有効
 ```
+
+## Notion API
+
+### Integration の作成（初回のみ）
+
+1. `https://www.notion.so/my-integrations` にアクセスする
+2. 「New integration」をクリック
+3. 名前（例: `confluence-to-notion-dev`）とワークスペースを設定
+4. 「Internal Integration Token」（`secret_xxx`）をコピーして `.env` の `NOTION_API_KEY` に設定する
+
+### ページへのアクセス権付与
+
+Integration はデフォルトでどのページにもアクセスできない。テスト対象ページを開き、右上「...」→「Connect to」→ 作成した Integration を選択する。親ページに付与すると子ページ・子 DB にも伝播する。
+
+`NOTION_TEST_PAGE_ID`: ページ URL 末尾の UUID（`notion.so/xxxxx` の `xxxxx` 部分）
+
+### 環境変数
+
+```
+NOTION_API_KEY=secret_xxx       # Internal Integration Token
+NOTION_TEST_PAGE_ID=xxx         # テスト用ページ ID（UUID）
+NOTION_TEST_DATABASE_ID=xxx     # テスト用 DB ID（任意）
+```
+
+### 注意点
+
+- API レート制限: 平均 1秒あたり3リクエスト。大量リクエスト時は `time.sleep(0.4)` を挟む。
+- `notion-client` が API バージョン `2022-06-28` を自動付与するため明示不要。

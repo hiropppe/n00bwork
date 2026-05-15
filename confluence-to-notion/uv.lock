@@ -312,6 +312,7 @@ dependencies = [
     { name = "jupyterlab" },
     { name = "lxml" },
     { name = "matplotlib" },
+    { name = "notion-client" },
     { name = "pandas" },
     { name = "python-dotenv" },
     { name = "requests" },
@@ -326,6 +327,7 @@ requires-dist = [
     { name = "jupyterlab", specifier = ">=4.4" },
     { name = "lxml", specifier = ">=5.3" },
     { name = "matplotlib", specifier = ">=3.9" },
+    { name = "notion-client", specifier = ">=2.2" },
     { name = "pandas", specifier = ">=2.2" },
     { name = "python-dotenv", specifier = ">=1.0" },
     { name = "requests", specifier = ">=2.32" },
@@ -1206,6 +1208,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/54/d2/92fa3243712b9a3e8bafaf60aac366da1cada3639ca767ff4b5b3654ec28/notebook_shim-0.2.4.tar.gz", hash = "sha256:b4b2cfa1b65d98307ca24361f5b30fe785b53c3fd07b7a47e89acb5e6ac638cb", size = 13167, upload-time = "2024-02-14T23:35:18.353Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/f9/33/bd5b9137445ea4b680023eb0469b2bb969d61303dedb2aac6560ff3d14a1/notebook_shim-0.2.4-py3-none-any.whl", hash = "sha256:411a5be4e9dc882a074ccbcae671eda64cceb068767e9a3419096986560e1cef", size = 13307, upload-time = "2024-02-14T23:35:16.286Z" },
+]
+
+[[package]]
+name = "notion-client"
+version = "3.1.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "httpx" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/c0/e3/4ac01384e86e2c381c21b87a0fefcdfe6d65577ae3153fad27e7e96c5d9c/notion_client-3.1.0.tar.gz", hash = "sha256:516e31326f855ec34559289b57be4e27ad656062f51f594c8f4ee3a608ee333d", size = 38781, upload-time = "2026-05-12T08:54:44.363Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/08/08/12645b24044301cb0d7908ec068c55c0d5724f39372891a1a27d630fdf50/notion_client-3.1.0-py2.py3-none-any.whl", hash = "sha256:7e3935f4dbc11231d8ad1fe404112e278501520342eaa35f86456f0df44a8aca", size = 23092, upload-time = "2026-05-12T08:54:43.135Z" },
 ]
 
 [[package]]
