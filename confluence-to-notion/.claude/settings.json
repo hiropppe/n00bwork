@@ -34,6 +34,7 @@
       "Bash(npm remove:*)"
     ]
   },
+  "plansDirectory": ".claude/plans",
   "sandbox": {
     "enabled": true,
     "autoAllowBashIfSandboxed": false
