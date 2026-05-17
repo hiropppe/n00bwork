@@ -33,5 +33,9 @@
       "Bash(npm uninstall:*)",
       "Bash(npm remove:*)"
     ]
+  },
+  "sandbox": {
+    "enabled": true,
+    "autoAllowBashIfSandboxed": false
   }
 }
