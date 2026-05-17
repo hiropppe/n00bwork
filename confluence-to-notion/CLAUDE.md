@@ -63,6 +63,12 @@ CONFLUENCE_DC_PAT=your-personal-access-token
 
 失効したら画面（`http://localhost:8090`）から再入力する。`docker-compose.yml` の `ATL_LICENSE_KEY` コメント行を参照。
 
+## ドキュメント
+
+| ファイル | 内容 |
+|---------|------|
+| `docs/migration-test-list.md` | ページ移行テストリスト（全110項目、Notion 対応可否・難易度付き） |
+
 ## ノートブック
 
 `notebooks/` に作業用ノートブックを置く。CSV 出力は `.gitignore` 対象。
