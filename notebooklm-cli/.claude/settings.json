@@ -33,5 +33,6 @@
       "Bash(npm uninstall:*)",
       "Bash(npm remove:*)"
     ]
-  }
+  },
+  "plansDirectory": ".claude/plans"
 }
