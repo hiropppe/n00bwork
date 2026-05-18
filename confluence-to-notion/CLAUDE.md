@@ -63,6 +63,31 @@ CONFLUENCE_DC_PAT=your-personal-access-token
 
 失効したら画面（`http://localhost:8090`）から再入力する。`docker-compose.yml` の `ATL_LICENSE_KEY` コメント行を参照。
 
+## テスト
+
+### ユニットテスト（API 不要・高速）
+
+Storage Format XML → Notion Block JSON の変換ロジックを実 API なしで検証する。
+
+```bash
+docker compose exec jupyter uv run pytest tests/unit/ -v
+```
+
+### E2Eテスト（実 API 使用）
+
+Confluence にテストページを作成 → 移行実行 → Notion でブロック構造を検証 → 両ページを削除する。
+`CONFLUENCE_DC_PAT` と `NOTION_API_KEY`・`NOTION_TEST_PAGE_ID` が `.env` に設定されている必要がある。
+
+```bash
+docker compose exec jupyter uv run pytest tests/e2e/ -v -m e2e
+```
+
+### 全テスト
+
+```bash
+docker compose exec jupyter uv run pytest -v
+```
+
 ## ドキュメント
 
 | ファイル | 内容 |
