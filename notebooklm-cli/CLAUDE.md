@@ -51,6 +51,43 @@ notebooklm login
 セッションは `~/.notebooklm/` に保存され、コンテナは同ディレクトリをマウントして参照する。
 セッション切れの際はホスト側で `notebooklm login` を再実行する。
 
+## Tips
+
+### ファイルのプロンプトを `ask` に渡す
+
+```bash
+docker compose exec python uv run notebooklm ask "$(cat prompt.txt)"
+```
+
+### 複数行プロンプトをインラインで渡す
+
+変数にヒアドキュメントで代入してから渡す：
+
+```bash
+prompt=$(cat <<'EOF'
+以下の観点で要約してください。
+
+- ポイント1
+- ポイント2
+EOF
+)
+docker compose exec python uv run notebooklm ask "$prompt"
+```
+
+コマンド一発で書く場合：
+
+```bash
+docker compose exec python uv run notebooklm ask "$(cat <<'EOF'
+以下の観点で要約してください。
+
+- ポイント1
+- ポイント2
+EOF
+)"
+```
+
+`'EOF'` とシングルクォートで囲むと `$変数` の展開が抑制される。展開したい場合は `EOF`（クォートなし）にする。
+
 ## 依存関係の追加
 
 ```bash
