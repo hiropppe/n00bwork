@@ -174,11 +174,14 @@ def _parse_task_list(tag: Tag) -> list[ConversionNode]:
 def _parse_table(tag: Tag) -> ConversionNode:
     rows_tags = tag.find_all("tr")
     rows: list[ConversionNode] = []
+    has_column_header = False
     has_row_header = False
 
     for i, tr in enumerate(rows_tags):
         cells = tr.find_all(["td", "th"])
-        if any(c.name == "th" for c in cells):
+        if i == 0 and cells and all(c.name == "th" for c in cells):
+            has_column_header = True
+        elif cells and cells[0].name == "th":
             has_row_header = True
         cell_nodes = [
             ConversionNode(node_type="table_cell", rich_text=_parse_rich_text(c))
@@ -190,7 +193,7 @@ def _parse_table(tag: Tag) -> ConversionNode:
     return ConversionNode(
         node_type="table",
         children=rows,
-        attrs={"table_width": table_width, "has_row_header": has_row_header},
+        attrs={"table_width": table_width, "has_column_header": has_column_header, "has_row_header": has_row_header},
     )
 
 

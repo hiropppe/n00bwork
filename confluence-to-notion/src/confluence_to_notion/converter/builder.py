@@ -104,7 +104,7 @@ def _build_block(node: ConversionNode) -> list[dict]:
             "type": "table",
             "table": {
                 "table_width": node.attrs.get("table_width", 1),
-                "has_column_header": False,
+                "has_column_header": node.attrs.get("has_column_header", False),
                 "has_row_header": node.attrs.get("has_row_header", False),
                 "children": rows,
             },

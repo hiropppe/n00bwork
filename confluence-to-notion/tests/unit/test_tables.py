@@ -52,7 +52,8 @@ class TestTableWithHeader:
         </table>
         """
         result = convert(xml)
-        assert result[0]["table"]["has_row_header"] is True
+        assert result[0]["table"]["has_column_header"] is True
+        assert result[0]["table"]["has_row_header"] is False
 
     def test_no_header_with_td_only(self):
         xml = """
