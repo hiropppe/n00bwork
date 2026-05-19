@@ -1,0 +1,42 @@
+{
+  "name": "Confluence to Notion Dev",
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "jupyter",
+  "workspaceFolder": "/workspace",
+  "overrideCommand": true,
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-toolsai.jupyter",
+        "ms-python.vscode-pylance",
+        "charliermarsh.ruff"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/usr/local/bin/python3",
+        "python.terminal.activateEnvironment": false,
+        "[python]": {
+          "editor.formatOnSave": true,
+          "editor.defaultFormatter": "charliermarsh.ruff"
+        },
+        "terminal.integrated.defaultProfile.linux": "bash"
+      }
+    }
+  },
+  "forwardPorts": [8888, 8090, 8091],
+  "portsAttributes": {
+    "8888": {
+      "label": "JupyterLab",
+      "onAutoForward": "notify"
+    },
+    "8090": {
+      "label": "Confluence",
+      "onAutoForward": "silent"
+    },
+    "8091": {
+      "label": "Confluence Synchrony",
+      "onAutoForward": "silent"
+    }
+  },
+  "postStartCommand": "nohup uv run jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root --NotebookApp.token='' --NotebookApp.password='' > /tmp/jupyter.log 2>&1 &"
+}
