@@ -1,0 +1,22 @@
+# venvs
+.venv/
+.venv-*/
+*/.venv/
+
+# PyInstaller
+build/
+dist/
+*.spec.bak
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+
+# macOS
+.DS_Store
+
+# packaging outputs
+packaging/**/Output/
+*.dmg

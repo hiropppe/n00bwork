@@ -1,0 +1,20 @@
+[project]
+name = "subsystem-b"
+version = "0.1.0"
+description = "Subsystem B worker: NDJSON stats worker (numpy). A must never import this."
+requires-python = ">=3.10"
+dependencies = [
+    "numpy>=1.26",
+]
+
+[project.optional-dependencies]
+build = [
+    "pyinstaller>=6.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["b_core"]
