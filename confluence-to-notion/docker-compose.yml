@@ -11,7 +11,7 @@ services:
     restart: unless-stopped
 
   postgres:
-    image: postgres:17
+    image: postgres:15
     environment:
       POSTGRES_DB: confluence
       POSTGRES_USER: confluence
@@ -27,7 +27,7 @@ services:
       retries: 5
 
   confluence:
-    image: atlassian/confluence
+    image: atlassian/confluence:8.5.14
     depends_on:
       postgres:
         condition: service_healthy
