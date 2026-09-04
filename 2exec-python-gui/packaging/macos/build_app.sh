@@ -31,13 +31,18 @@ rm -rf "${APP_BUNDLE}"
 mkdir -p "${APP_BUNDLE}/Contents/MacOS"
 mkdir -p "${APP_BUNDLE}/Contents/Resources"
 
-# A（one-folder）の中身を Contents/MacOS/ へ
+# A（one-folder）の中身を Contents/MacOS/ へ。
+# ただし assemble 済みの dist/app_a には b_worker/ が同梱されている場合があるので、
+# それは除外して A 本体だけをコピーする（B は別途 Resources へ隔離配置する）。
 cp -R "${DIST}/app_a/." "${APP_BUNDLE}/Contents/MacOS/"
+rm -rf "${APP_BUNDLE}/Contents/MacOS/b_worker"
 
-# B（one-folder）を Contents/Resources/ へ丸ごと埋め込む。
-# paths.py は Contents/Resources/b_worker（実行ファイル）を探すので、
-# b_worker one-folder の中身を Resources 直下に展開する。
-cp -R "${DIST}/b_worker/." "${APP_BUNDLE}/Contents/Resources/"
+# B（one-folder）を Contents/Resources/b_worker/ へ「丸ごと」ネスト埋め込みする。
+# PyInstaller one-folder の _internal を保持したまま隔離するのが肝
+# （中身をマージすると numpy が A 側に混入し Python ランタイムも衝突する）。
+# paths.py は Contents/Resources/b_worker/b_worker を探す。
+rm -rf "${APP_BUNDLE}/Contents/Resources/b_worker"
+cp -R "${DIST}/b_worker" "${APP_BUNDLE}/Contents/Resources/b_worker"
 
 # Info.plist
 cat > "${APP_BUNDLE}/Contents/Info.plist" <<PLIST
@@ -66,7 +71,7 @@ if [[ -n "${SIGN_IDENTITY}" ]]; then
             --sign "${SIGN_IDENTITY}" "{}"
     codesign --force --timestamp --options runtime \
         --entitlements "${ENTITLEMENTS}" \
-        --sign "${SIGN_IDENTITY}" "${APP_BUNDLE}/Contents/Resources/b_worker"
+        --sign "${SIGN_IDENTITY}" "${APP_BUNDLE}/Contents/Resources/b_worker/b_worker"
 
     # 次に A の dylib と実行ファイル、最後にバンドル全体を deep 署名
     find "${APP_BUNDLE}/Contents/MacOS" -type f \( -name "*.dylib" -o -name "*.so" \) -print0 \

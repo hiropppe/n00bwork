@@ -53,18 +53,24 @@ build-b:
 build-a:
 	cd $(A_DIR) && $(A_PY) -m PyInstaller --noconfirm --clean --distpath $(REPO)/dist --workpath $(REPO)/build/a app_a.spec
 
-# 3. B_worker を A の配布ディレクトリへ配置（frozen 時のパス解決に合わせる）
+# 3. B_worker を A の配布ディレクトリへ「B の one-folder ごと」ネスト配置する。
+#    PyInstaller one-folder は依存を _internal/ に置くため、中身をマージすると
+#    A の _internal に numpy が混入し Python ランタイムも衝突する。B は自分の
+#    _internal を保持したまま b_worker/ サブフォルダとして隔離する。
 assemble:
-	cp -R $(REPO)/dist/b_worker/. $(REPO)/dist/app_a/
-	@echo "assembled: dist/app_a/ に app_a と $(WORKER_BIN) が同居"
+	rm -rf $(REPO)/dist/app_a/b_worker
+	cp -R $(REPO)/dist/b_worker $(REPO)/dist/app_a/b_worker
+	@echo "assembled: dist/app_a/b_worker/ に B の one-folder を隔離同梱"
 
-# 依存分離の検証: A の配布物に numpy が無く、B の配布物に PySide6 が無いこと。
+# 依存分離の検証: A 自身のランタイム(_internal)に numpy が無く、
+# B 自身のランタイム(_internal)に PySide6 が無いこと。
+# （B は dist/app_a/b_worker/ 配下に隔離されているので、そこは A の領域として数えない）
 verify-isolation:
-	@echo "== dist/app_a に numpy が混入していないか =="
-	@! find $(REPO)/dist/app_a -iname 'numpy*' | grep . || (echo "FAIL: numpy が A に混入" && exit 1)
+	@echo "== A 自身の _internal に numpy が混入していないか =="
+	@! find $(REPO)/dist/app_a/_internal -iname 'numpy*' | grep . || (echo "FAIL: numpy が A の _internal に混入" && exit 1)
 	@echo "OK: A に numpy なし"
-	@echo "== dist/b_worker に PySide6 が混入していないか =="
-	@! find $(REPO)/dist/b_worker -iname 'PySide6*' -o -iname 'shiboken6*' | grep . || (echo "FAIL: PySide6 が B に混入" && exit 1)
+	@echo "== B 自身の _internal に PySide6 が混入していないか =="
+	@! find $(REPO)/dist/b_worker/_internal \( -iname 'PySide6*' -o -iname 'shiboken6*' \) | grep . || (echo "FAIL: PySide6 が B に混入" && exit 1)
 	@echo "OK: B に PySide6 なし"
 
 clean:

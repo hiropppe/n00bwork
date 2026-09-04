@@ -95,11 +95,28 @@ make test        # または .venv-test/bin/pytest tests/ -v
 ```bash
 make build-b          # 1. B_worker（numpy 同梱、PySide6 なし）→ dist/b_worker/
 make build-a          # 2. A（PySide6 同梱、numpy なし）→ dist/app_a/
-make assemble         # 3. B_worker を dist/app_a/ に同居させる
+make assemble         # 3. B 一式を dist/app_a/b_worker/ にネスト同梱
 make verify-isolation # 依存分離の検証（A に numpy なし / B に PySide6 なし）
 ```
 
 `make all` で 1→2→3 を一括実行。
+
+> **assemble の要点**: PyInstaller 6.x の one-folder は依存を `_internal/` に置く。
+> B の中身を A のフォルダにマージすると **A の `_internal/` に numpy が混入し、
+> Python ランタイムも衝突する**。そこで B の one-folder を丸ごと
+> `dist/app_a/b_worker/` サブフォルダとして**ネスト**し、それぞれが自分の
+> `_internal/` を保持したまま隔離する。配布物のレイアウト:
+>
+> ```
+> dist/app_a/
+> ├── app_a                 # A 本体
+> ├── _internal/            # A の依存（PySide6。numpy は無い）
+> └── b_worker/             # B 一式（隔離）
+>     ├── b_worker          # B 本体
+>     └── _internal/        # B の依存（numpy。PySide6 は無い）
+> ```
+>
+> A は frozen 時 `Path(sys.executable).parent / "b_worker" / "b_worker"` で B を解決する。
 
 ### frozen スモーク
 
@@ -110,13 +127,14 @@ APP_A_SMOKE=1 QT_QPA_PLATFORM=offscreen ./dist/app_a/app_a
 
 ### Windows
 
-`packaging/windows/installer.iss`（Inno Setup）で `dist/app_a/*`（A + b_worker.exe）を
-同一インストール先にまとめる。スタートメニューのショートカットは **A.exe だけ**を指す。
-A は `Path(sys.executable).parent / "b_worker.exe"` で B を解決する。
+`packaging/windows/installer.iss`（Inno Setup）で assemble 済みの `dist/app_a/*`
+（A + `b_worker/` サブフォルダ）を同一インストール先へ再帰配置する。スタートメニューの
+ショートカットは **A.exe だけ**を指す。A は
+`Path(sys.executable).parent / "b_worker" / "b_worker.exe"` で B を解決する。
 
 ### macOS
 
-`packaging/macos/build_app.sh` で `A.app/Contents/Resources/` に `b_worker` を埋め込み、
+`packaging/macos/build_app.sh` で `A.app/Contents/Resources/b_worker/` に B 一式を埋め込み、
 A・B **両方**を codesign + notarization して `.dmg` 化する（片方だけ署名だと B 起動時に
 Gatekeeper で弾かれる）。
 

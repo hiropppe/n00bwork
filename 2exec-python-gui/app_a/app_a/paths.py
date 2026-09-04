@@ -17,9 +17,11 @@ def is_frozen() -> bool:
 def worker_executable() -> Path:
     """B_worker の実行ファイル（frozen）または worker.py（dev）のパスを返す。
 
-    frozen 時: A 実行ファイルの隣にある b_worker（Windows は b_worker.exe）。
-        - Windows/Linux: <A のあるディレクトリ>/b_worker[.exe]
-        - macOS .app: A は Contents/MacOS/ にいる。b_worker は Contents/Resources/
+    frozen 時: B は PyInstaller one-folder のまま `b_worker/` サブフォルダとして
+    同梱する（B 専用の `_internal/` を保持したまま隔離する。A の `_internal/` に
+    B の依存＝numpy を絶対に混ぜないため）。
+        - Windows/Linux: <A のあるディレクトリ>/b_worker/b_worker[.exe]
+        - macOS .app: A は Contents/MacOS/ にいる。B は Contents/Resources/b_worker/
           に埋め込む方針なので、そちらを優先的に探す。
     dev 時: リポジトリ内の subsystem_b/worker.py。
     """
@@ -28,13 +30,13 @@ def worker_executable() -> Path:
         name = "b_worker.exe" if sys.platform == "win32" else "b_worker"
 
         if sys.platform == "darwin":
-            # .app/Contents/MacOS/A  → Resources に埋め込んだ b_worker を探す
-            resources = base.parent / "Resources"
-            candidate = resources / name
+            # .app/Contents/MacOS/app_a → Resources/b_worker/ に埋め込んだ B を探す
+            candidate = base.parent / "Resources" / "b_worker" / name
             if candidate.exists():
                 return candidate
-        # Windows / Linux、または macOS で MacOS 直下に置いた場合
-        return base / name
+        # Windows / Linux、または macOS で MacOS 側に置いた場合:
+        # A の隣の b_worker/ サブフォルダ（B の one-folder 一式）を指す。
+        return base / "b_worker" / name
 
     # dev: subsystem_b/worker.py（このファイルは app_a/app_a/paths.py）
     return Path(__file__).resolve().parents[2] / "subsystem_b" / "worker.py"

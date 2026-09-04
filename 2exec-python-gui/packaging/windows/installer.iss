@@ -32,8 +32,11 @@ ArchitecturesInstallIn64BitMode=x64compatible
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Files]
-; dist/app_a/ の中身をまるごと（app_a.exe + b_worker.exe + 両者の依存）
-; インストール先へ配置する。assemble 済みであることが前提。
+; assemble 済みの dist/app_a/ をまるごと配置する。構成は:
+;   {app}\app_a.exe          … A 本体
+;   {app}\_internal\         … A の依存（PySide6。numpy は無い）
+;   {app}\b_worker\b_worker.exe と {app}\b_worker\_internal\ … B 一式（numpy）
+; A は Path(sys.executable).parent \ "b_worker" \ "b_worker.exe" で B を解決する。
 Source: "..\..\dist\app_a\*"; DestDir: "{app}"; Flags: recursesubdirs createallsubdirs ignoreversion
 
 [Icons]
