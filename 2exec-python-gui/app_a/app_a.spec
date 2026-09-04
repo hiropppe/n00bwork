@@ -7,7 +7,14 @@ A 専用 venv でビルドする。PySide6 を同梱し、numpy は一切含め�
 
 B_worker はこの spec では同梱しない。パッケージング段階（§7）で
 dist/b_worker/ の中身を A の配布ディレクトリへ配置する。
+
+macOS では末尾で BUNDLE により dist/StatsGUI.app も生成する。手組みの .app に
+onedir をそのまま置くと、PyInstaller の macOS ブートローダが依存を
+Contents/Frameworks/ に探しにいくため _internal/ を見つけられず起動に失敗する。
+BUNDLE に .app を作らせて正しい内部レイアウトにするのが肝。
 """
+
+import sys
 
 block_cipher = None
 
@@ -58,3 +65,22 @@ coll = COLLECT(
     upx_exclude=[],
     name='app_a',
 )
+
+# macOS: 正しい .app を PyInstaller に生成させる。
+# B_worker はこの後 build_app.sh が Contents/Resources/b_worker/ に埋め込む。
+if sys.platform == 'darwin':
+    app = BUNDLE(
+        coll,
+        name='StatsGUI.app',
+        icon=None,
+        bundle_identifier='work.n00b.statsgui',
+        version='0.1.0',
+        info_plist={
+            'CFBundleName': 'StatsGUI',
+            'CFBundleDisplayName': 'Stats GUI',
+            'CFBundleShortVersionString': '0.1.0',
+            'CFBundleVersion': '0.1.0',
+            'LSMinimumSystemVersion': '11.0',
+            'NSHighResolutionCapable': True,
+        },
+    )

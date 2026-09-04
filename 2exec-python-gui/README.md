@@ -134,9 +134,14 @@ APP_A_SMOKE=1 QT_QPA_PLATFORM=offscreen ./dist/app_a/app_a
 
 ### macOS
 
-`packaging/macos/build_app.sh` で `A.app/Contents/Resources/b_worker/` に B 一式を埋め込み、
-A・B **両方**を codesign + notarization して `.dmg` 化する（片方だけ署名だと B 起動時に
-Gatekeeper で弾かれる）。
+`.app` は **PyInstaller の `BUNDLE` が生成**する（`app_a.spec` の末尾で macOS 時のみ
+`dist/StatsGUI.app` を出力）。手組みで onedir を `Contents/MacOS/` に置くと、macOS の
+ブートローダが依存を `Contents/Frameworks/` に探しに行き `_internal/` を見つけられず
+起動に失敗するため。
+
+`packaging/macos/build_app.sh` は生成済みの `StatsGUI.app` の
+`Contents/Resources/b_worker/` に B 一式を埋め込み、A・B **両方**を codesign +
+notarization して `.dmg` 化する（片方だけ署名だと B 起動時に Gatekeeper で弾かれる）。
 
 ```bash
 # ローカル検証（署名なし）
