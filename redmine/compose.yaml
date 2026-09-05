@@ -1,0 +1,62 @@
+name: redmine-lab
+
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-redmine}
+      POSTGRES_USER: ${POSTGRES_USER:-redmine}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-redmine}
+      # 日本語データを扱うので初期化時のロケール/照合順序を明示
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
+      TZ: Asia/Tokyo
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-redmine} -d ${POSTGRES_DB:-redmine}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  redmine:
+    image: redmine:${REDMINE_TAG:-7.0.1}
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "${REDMINE_PORT:-3000}:3000"
+    environment:
+      REDMINE_DB_POSTGRES: db
+      REDMINE_DB_PORT: 5432
+      REDMINE_DB_DATABASE: ${POSTGRES_DB:-redmine}
+      REDMINE_DB_USERNAME: ${POSTGRES_USER:-redmine}
+      REDMINE_DB_PASSWORD: ${POSTGRES_PASSWORD:-redmine}
+      REDMINE_DB_ENCODING: utf8
+      # セッション用の秘密鍵。REDMINE_ 接頭辞なしで渡すと
+      # docker compose exec 経由の rake タスクからも参照できる
+      SECRET_KEY_BASE: ${REDMINE_SECRET_KEY_BASE:?.env に REDMINE_SECRET_KEY_BASE を設定してください}
+      # plugins/ に置いたプラグインを起動時に自動マイグレート
+      REDMINE_PLUGINS_MIGRATE: "true"
+      TZ: Asia/Tokyo
+      RAILS_MAX_THREADS: "5"
+    volumes:
+      # 添付ファイル（永続化しないと再作成で消える）
+      - files:/usr/src/redmine/files
+      # プラグイン検証用。ホスト側の plugins/ に置くだけで反映される
+      - ./plugins:/usr/src/redmine/plugins
+      # テーマを試す場合のみ有効化（同梱テーマを上書きするので README 参照）
+      # - ./themes:/usr/src/redmine/public/themes
+      # 設定を試すとき用。使わない場合はコメントアウトのままでよい
+      # - ./configuration.yml:/usr/src/redmine/config/configuration.yml:ro
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost:3000/login || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+
+volumes:
+  db-data:
+  files:
